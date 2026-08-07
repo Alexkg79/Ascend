@@ -23,7 +23,7 @@ export function ProfileHeader({
 
   return (
     <View style={styles.wrap}>
-      <LevelRing size={92} strokeWidth={7} percentage={percentage}>
+      <LevelRing size={92} strokeWidth={7} percentage={percentage} niveau={niveau}>
         <View style={styles.ringContent}>
           <Text style={styles.niveau}>{niveau}</Text>
           <Text style={styles.niveauLabel}>NIVEAU</Text>

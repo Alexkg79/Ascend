@@ -1,5 +1,7 @@
 import { Check, type LucideIcon } from 'lucide-react-native';
+import { useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 
 import { AuthColors, AuthFonts } from '@/screens/auth-theme';
 
@@ -13,26 +15,53 @@ type ChallengeCardProps = {
 };
 
 export function ChallengeCard({ icon: Icon, accentColor, titre, xp, done, onPress }: ChallengeCardProps) {
+  const cardOpacity = useSharedValue(done ? 0.55 : 1);
+  const checkScale = useSharedValue(1);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    cardOpacity.value = withTiming(done ? 0.55 : 1, { duration: 220 });
+
+    if (done) {
+      checkScale.value = withSequence(
+        withTiming(1.35, { duration: 90, easing: Easing.out(Easing.quad) }),
+        withTiming(1, { duration: 160, easing: Easing.out(Easing.quad) }),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
+
+  const cardAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: cardOpacity.value,
+  }));
+
+  const checkAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: checkScale.value }],
+  }));
+
   return (
-    <TouchableOpacity
-      activeOpacity={done ? 1 : 0.85}
-      disabled={done}
-      onPress={onPress}
-      style={[styles.card, done && styles.cardDone]}>
-      <View style={[styles.iconWrap, { backgroundColor: `${accentColor}22` }]}>
-        <Icon size={18} color={accentColor} />
-      </View>
+    <TouchableOpacity activeOpacity={done ? 1 : 0.85} disabled={done} onPress={onPress}>
+      <Animated.View style={[styles.card, cardAnimatedStyle]}>
+        <View style={[styles.iconWrap, { backgroundColor: `${accentColor}22` }]}>
+          <Icon size={18} color={accentColor} />
+        </View>
 
-      <View style={styles.info}>
-        <Text style={[styles.titre, done && styles.titreDone]} numberOfLines={2}>
-          {titre}
-        </Text>
-        <Text style={styles.xp}>+{xp} XP</Text>
-      </View>
+        <View style={styles.info}>
+          <Text style={[styles.titre, done && styles.titreDone]} numberOfLines={2}>
+            {titre}
+          </Text>
+          <Text style={styles.xp}>+{xp} XP</Text>
+        </View>
 
-      <View style={[styles.checkbox, done && styles.checkboxDone]}>
-        {done && <Check size={14} color={AuthColors.bgDeep} strokeWidth={3} />}
-      </View>
+        <Animated.View style={[styles.checkbox, done && styles.checkboxDone, checkAnimatedStyle]}>
+          {done && <Check size={14} color={AuthColors.bgDeep} strokeWidth={3} />}
+        </Animated.View>
+      </Animated.View>
     </TouchableOpacity>
   );
 }
@@ -47,9 +76,6 @@ const styles = StyleSheet.create({
     backgroundColor: AuthColors.bgSurface,
     borderWidth: 1,
     borderColor: AuthColors.border,
-  },
-  cardDone: {
-    opacity: 0.55,
   },
   iconWrap: {
     width: 40,

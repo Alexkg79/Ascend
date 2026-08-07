@@ -20,7 +20,7 @@ export function HomeHeader({ niveau, xpDansNiveau, xpProchainNiveau, streak, cri
   return (
     <View style={styles.row}>
       <View style={styles.identity}>
-        <LevelRing size={48} strokeWidth={4} percentage={percentage}>
+        <LevelRing size={48} strokeWidth={4} percentage={percentage} niveau={niveau}>
           <Text style={styles.level}>{niveau}</Text>
         </LevelRing>
         <View>

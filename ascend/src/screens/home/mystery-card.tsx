@@ -1,5 +1,7 @@
 import { Check, ChevronRight, CircleQuestionMark } from 'lucide-react-native';
+import { useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { AuthColors, AuthFonts } from '@/screens/auth-theme';
 
@@ -15,6 +17,27 @@ type MysteryCardProps = {
 export function MysteryCard({ ouvert, complete, titre, xp, onOpen, onComplete }: MysteryCardProps) {
   const disabled = ouvert && complete;
 
+  const revealProgress = useSharedValue(1);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (ouvert) {
+      revealProgress.value = 0;
+      revealProgress.value = withTiming(1, { duration: 320, easing: Easing.out(Easing.cubic) });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ouvert]);
+
+  const revealAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: revealProgress.value,
+    transform: [{ scale: 0.94 + revealProgress.value * 0.06 }],
+  }));
+
   return (
     <TouchableOpacity
       activeOpacity={disabled ? 1 : 0.85}
@@ -25,14 +48,14 @@ export function MysteryCard({ ouvert, complete, titre, xp, onOpen, onComplete }:
         <CircleQuestionMark size={20} color={AuthColors.violet} />
       </View>
 
-      <View style={styles.info}>
+      <Animated.View style={[styles.info, revealAnimatedStyle]}>
         <Text style={[styles.title, complete && styles.titleDone]}>
           {ouvert ? titre : 'Défi mystère'}
         </Text>
         <Text style={styles.subtitle}>
           {ouvert ? `+${xp} XP · défi mystère` : 'Récompense surprise à la clé'}
         </Text>
-      </View>
+      </Animated.View>
 
       {ouvert ? (
         <View style={[styles.checkbox, complete && styles.checkboxDone]}>

@@ -5,9 +5,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useBoutique } from '@/hooks/use-boutique';
 import { COUT_CHANGER_DEFI, COUT_DEFI_BONUS, COUT_RECUPERER_STREAK } from '@/lib/gamification';
-import { AuthButton, AuthErrorText } from '@/screens/auth-components';
+import { AuthErrorText } from '@/screens/auth-components';
 import { AuthColors, AuthFonts, useAuthFonts } from '@/screens/auth-theme';
 
+import { ShopButton } from './shop-button';
 import { ShopItem } from './shop-item';
 
 export function BoutiqueScreen() {
@@ -59,16 +60,12 @@ export function BoutiqueScreen() {
                     <Text style={styles.challengeTitle} numberOfLines={1}>
                       {daily.challenges.titre}
                     </Text>
-                    <TouchableOpacity
-                      activeOpacity={0.8}
-                      disabled={actionPending || cristaux < COUT_CHANGER_DEFI}
+                    <ShopButton
+                      variant="compact"
+                      title="Échanger"
                       onPress={() => handleSwap(daily.id)}
-                      style={[
-                        styles.smallButton,
-                        (actionPending || cristaux < COUT_CHANGER_DEFI) && styles.smallButtonDisabled,
-                      ]}>
-                      <Text style={styles.smallButtonText}>Échanger</Text>
-                    </TouchableOpacity>
+                      disabled={actionPending || cristaux < COUT_CHANGER_DEFI}
+                    />
                   </View>
                 ))}
               </View>
@@ -79,7 +76,7 @@ export function BoutiqueScreen() {
             title="Débloquer un défi bonus"
             description="Ajoute un 4e défi aléatoire à ta liste du jour."
             cost={COUT_DEFI_BONUS}>
-            <AuthButton
+            <ShopButton
               title="Débloquer"
               onPress={handleUnlockBonus}
               loading={actionPending}
@@ -92,7 +89,7 @@ export function BoutiqueScreen() {
               title="Récupérer un streak manqué"
               description="Marque la journée d'hier comme réussie pour ne pas perdre ton streak."
               cost={COUT_RECUPERER_STREAK}>
-              <AuthButton
+              <ShopButton
                 title="Récupérer"
                 onPress={handleRecoverStreak}
                 loading={actionPending}
@@ -171,21 +168,5 @@ const styles = StyleSheet.create({
     fontFamily: AuthFonts.body,
     fontSize: 13,
     color: AuthColors.textPrimary,
-  },
-  smallButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 10,
-    backgroundColor: AuthColors.bgSurfaceAlt,
-    borderWidth: 1,
-    borderColor: AuthColors.violet,
-  },
-  smallButtonDisabled: {
-    opacity: 0.4,
-  },
-  smallButtonText: {
-    fontFamily: AuthFonts.bodySemiBold,
-    fontSize: 11.5,
-    color: AuthColors.violet,
   },
 });
