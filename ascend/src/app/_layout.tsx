@@ -20,6 +20,7 @@ function RootNavigator() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!!session && onboardingStatus === 'complete'}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="boutique" options={{ presentation: 'modal' }} />
       </Stack.Protected>
       <Stack.Protected guard={!!session && onboardingStatus === 'pending'}>
         <Stack.Screen name="(onboarding)" />

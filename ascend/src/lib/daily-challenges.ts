@@ -15,6 +15,12 @@ export function getTodayDateString(): string {
   return formatDateString(new Date());
 }
 
+export function addDays(date: Date, delta: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + delta);
+  return result;
+}
+
 function shuffle<T>(items: T[]): T[] {
   const array = [...items];
   for (let i = array.length - 1; i > 0; i -= 1) {
@@ -33,7 +39,7 @@ export async function fetchThemes(): Promise<Theme[]> {
 async function fetchDailyChallengesForDate(userId: string, date: string): Promise<DailyChallenge[]> {
   const { data, error } = await supabase
     .from('daily_challenges')
-    .select('id, complete, completed_at, challenge_id, challenges(*)')
+    .select('id, complete, completed_at, challenge_id, est_bonus, challenges(*)')
     .eq('user_id', userId)
     .eq('date', date);
 
@@ -108,7 +114,7 @@ export async function ensureDailyChallenges(userId: string): Promise<DailyChalle
   const { data: inserted, error: insertError } = await supabase
     .from('daily_challenges')
     .insert(picked.map((challenge) => ({ user_id: userId, challenge_id: challenge.id, date: today })))
-    .select('id, complete, completed_at, challenge_id, challenges(*)');
+    .select('id, complete, completed_at, challenge_id, est_bonus, challenges(*)');
 
   if (insertError) {
     // Course avec un autre chargement concurrent (ex. double effet en dev) : on

@@ -73,6 +73,7 @@ create table daily_challenges (
   date date not null default current_date,
   complete boolean not null default false,
   completed_at timestamptz,
+  est_bonus boolean not null default false,   -- débloqué via la boutique cristaux
   unique (user_id, challenge_id, date)
 );
 

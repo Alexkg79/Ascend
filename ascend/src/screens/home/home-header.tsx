@@ -1,5 +1,6 @@
+import { useRouter } from 'expo-router';
 import { Flame, Gem } from 'lucide-react-native';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { LevelRing } from '@/components/level-ring';
 import { AuthColors, AuthFonts } from '@/screens/auth-theme';
@@ -13,6 +14,7 @@ type HomeHeaderProps = {
 };
 
 export function HomeHeader({ niveau, xpDansNiveau, xpProchainNiveau, streak, cristaux }: HomeHeaderProps) {
+  const router = useRouter();
   const percentage = xpProchainNiveau > 0 ? (xpDansNiveau / xpProchainNiveau) * 100 : 0;
 
   return (
@@ -34,10 +36,10 @@ export function HomeHeader({ niveau, xpDansNiveau, xpProchainNiveau, streak, cri
           <Flame size={14} color={AuthColors.gold} />
           <Text style={styles.chipText}>{streak}</Text>
         </View>
-        <View style={styles.chip}>
+        <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/boutique')} style={styles.chip}>
           <Gem size={14} color={AuthColors.teal} />
           <Text style={styles.chipText}>{cristaux}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

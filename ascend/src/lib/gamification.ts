@@ -12,6 +12,11 @@ export const CRISTAUX_PAR_DEFI = 1;
 export const CRISTAUX_DEFI_MYSTERE = 2;
 export const MULTIPLICATEUR_XP_MYSTERE = 2;
 
+// Coûts de la boutique cristaux (voir docs/bareme.md).
+export const COUT_CHANGER_DEFI = 4;
+export const COUT_DEFI_BONUS = 8;
+export const COUT_RECUPERER_STREAK = 12;
+
 // XP nécessaire pour passer du niveau N à N+1 : 100 + (N-1) x 40
 export function seuilNiveauGlobal(niveau: number): number {
   return 100 + (niveau - 1) * 40;

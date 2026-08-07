@@ -37,6 +37,7 @@ export type DailyChallenge = {
   complete: boolean;
   completed_at: string | null;
   challenge_id: string;
+  est_bonus: boolean;
   challenges: Challenge;
 };
 

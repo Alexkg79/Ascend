@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { completeDailyChallenge, completeMysteryChallenge, openMysteryChallenge } from '@/lib/challenge-rewards';
 import { ensureDailyChallenges, ensureMysteryChallenge, fetchThemes } from '@/lib/daily-challenges';
 import { supabase } from '@/lib/supabase';
+import { syncStreakActuel } from '@/lib/streaks';
 import type { DailyChallenge, MysteryChallenge, Profile, Theme } from '@/lib/types';
 
 function getErrorMessage(error: unknown): string {
@@ -39,6 +40,11 @@ export function useDailyChallenges() {
     setLoading(true);
     setError(null);
     try {
+      // Vérifie/rompt le streak avant toute autre chose — même si rien n'est
+      // encore validé aujourd'hui — puis seulement ensuite l'incrémentation
+      // normale (dans completeChallenge/completeMystery) s'applique par-dessus.
+      await syncStreakActuel(userId);
+
       const [daily, mystery, themesData] = await Promise.all([
         ensureDailyChallenges(userId),
         ensureMysteryChallenge(userId),
