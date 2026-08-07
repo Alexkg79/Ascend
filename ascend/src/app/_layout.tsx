@@ -10,16 +10,19 @@ import { AuthProvider, useAuth } from '@/hooks/use-auth';
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
-  const { session, loading } = useAuth();
+  const { session, loading, onboardingStatus } = useAuth();
 
-  if (loading) {
+  if (loading || (session && onboardingStatus === 'unknown')) {
     return <LoadingScreen />;
   }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!!session}>
+      <Stack.Protected guard={!!session && onboardingStatus === 'complete'}>
         <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!!session && onboardingStatus === 'pending'}>
+        <Stack.Screen name="(onboarding)" />
       </Stack.Protected>
       <Stack.Protected guard={!session}>
         <Stack.Screen name="(auth)" />

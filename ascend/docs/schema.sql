@@ -32,12 +32,18 @@ create table profiles (
 -- Préférences de challenge choisies à l'onboarding
 create table user_challenge_prefs (
   user_id uuid primary key references profiles(id) on delete cascade,
-  themes_choisis text[] not null default '{}',      -- ex: ['sport','confiance']
   duree_jours int not null default 30,               -- 7 / 30 / 60 / 90 / perso
   temps_disponible_min int not null default 15,
-  difficulte text not null default 'moyen'           -- 'facile' | 'moyen' | 'difficile'
-    check (difficulte in ('facile','moyen','difficile')),
   updated_at timestamptz not null default now()
+);
+
+-- Thèmes choisis à l'onboarding, avec une difficulté par thème
+create table user_theme_prefs (
+  user_id uuid references profiles(id) on delete cascade,
+  theme_id text references themes(id) not null,
+  difficulte text not null                            -- 'facile' | 'moyen' | 'difficile'
+    check (difficulte in ('facile','moyen','difficile')),
+  primary key (user_id, theme_id)
 );
 
 -- Compétence par thème et par utilisateur
@@ -110,6 +116,7 @@ create table streaks_history (
 -- ============================================================
 alter table profiles enable row level security;
 alter table user_challenge_prefs enable row level security;
+alter table user_theme_prefs enable row level security;
 alter table user_skills enable row level security;
 alter table daily_challenges enable row level security;
 alter table mystery_challenges enable row level security;
@@ -122,6 +129,9 @@ create policy "Utilisateur modifie son propre profil" on profiles
   for update using (auth.uid() = id);
 
 create policy "Utilisateur gère ses préférences" on user_challenge_prefs
+  for all using (auth.uid() = user_id);
+
+create policy "Utilisateur gère ses préférences de thème" on user_theme_prefs
   for all using (auth.uid() = user_id);
 
 create policy "Utilisateur gère ses compétences" on user_skills
