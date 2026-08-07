@@ -13,9 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthButton } from '@/screens/auth-components';
 import { AuthColors, AuthFonts, useAuthFonts } from '@/screens/auth-theme';
 
+import { getThemeAccentColor, getThemeIcon } from '@/lib/theme-icons';
+
 import { DifficultySelector, OnboardingStepHeader } from './onboarding-components';
 import { useOnboarding } from './onboarding-context';
-import { getThemeAccentColor, getThemeIcon } from './theme-icons';
 
 export function ThemesScreen() {
   const [fontsLoaded] = useAuthFonts();

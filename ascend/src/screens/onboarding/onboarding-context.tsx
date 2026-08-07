@@ -2,8 +2,9 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 
 import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/lib/supabase';
+import type { Difficulte } from '@/lib/types';
 
-export type Difficulte = 'facile' | 'moyen' | 'difficile';
+export type { Difficulte };
 
 export const DIFFICULTE_OPTIONS: { value: Difficulte; label: string }[] = [
   { value: 'facile', label: 'Facile' },
