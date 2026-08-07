@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { completeDailyChallenge, completeMysteryChallenge, openMysteryChallenge } from '@/lib/challenge-rewards';
@@ -25,6 +25,14 @@ export function useDailyChallenges() {
   const [mysteryChallenge, setMysteryChallenge] = useState<MysteryChallenge | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // useFocusEffect peut redéclencher son callback plusieurs fois de suite
+  // pendant une même transition de navigation. Sans garde, deux appels à
+  // load() qui se chevauchent peuvent tous les deux lire "aucun défi
+  // aujourd'hui" avant que l'un ou l'autre n'ait inséré — et donc générer
+  // chacun leur propre lot de défis (ensureDailyChallenges n'est pas
+  // atomique). Ce ref sérialise les appels : un load() déjà en cours bloque
+  // les suivants jusqu'à ce qu'il se termine.
+  const loadInFlightRef = useRef(false);
 
   const loadProfile = useCallback(async (id: string) => {
     const { data, error: profileError } = await supabase
@@ -37,7 +45,8 @@ export function useDailyChallenges() {
   }, []);
 
   const load = useCallback(async () => {
-    if (!userId) return;
+    if (!userId || loadInFlightRef.current) return;
+    loadInFlightRef.current = true;
     setLoading(true);
     setError(null);
     try {
@@ -59,6 +68,7 @@ export function useDailyChallenges() {
       setError(getErrorMessage(err));
     } finally {
       setLoading(false);
+      loadInFlightRef.current = false;
     }
   }, [userId, loadProfile]);
 
