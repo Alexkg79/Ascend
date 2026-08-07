@@ -27,7 +27,7 @@ export function useDailyChallenges() {
   const loadProfile = useCallback(async (id: string) => {
     const { data, error: profileError } = await supabase
       .from('profiles')
-      .select('id, xp_global, cristaux, streak_actuel')
+      .select('id, xp_global, cristaux, streak_actuel, streak_max')
       .eq('id', id)
       .single();
     if (profileError) throw profileError;

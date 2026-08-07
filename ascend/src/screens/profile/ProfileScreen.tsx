@@ -9,11 +9,12 @@ import { AuthColors, AuthFonts, useAuthFonts } from '@/screens/auth-theme';
 
 import { BadgesSection } from './badges-section';
 import { ProfileHeader } from './profile-header';
+import { ProfileStats } from './profile-stats';
 import { SkillRow } from './skill-row';
 
 export function ProfileScreen() {
   const [fontsLoaded] = useAuthFonts();
-  const { profile, skills, badges, loading, error } = useProfileProgress();
+  const { profile, skills, badges, stats, loading, error } = useProfileProgress();
 
   if (!fontsLoaded) return null;
 
@@ -56,6 +57,12 @@ export function ProfileScreen() {
             ))}
           </View>
         </View>
+
+        <ProfileStats
+          totalDefisCompletes={stats.totalDefisCompletes}
+          meilleurStreak={stats.meilleurStreak}
+          joursActifs={stats.joursActifs}
+        />
 
         <BadgesSection badges={badges} />
 

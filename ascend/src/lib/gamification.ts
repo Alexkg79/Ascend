@@ -22,6 +22,20 @@ export function seuilNiveauCompetence(niveau: number): number {
   return 50 + (niveau - 1) * 20;
 }
 
+// Paliers de streak/niveau qui débloquent un badge (voir docs/badges.sql
+// pour la table de référence : premier-defi, premier-mystere, streak-7,
+// streak-30, streak-90, niveau-5, niveau-10).
+export const BADGE_STREAK_THRESHOLDS: { seuil: number; badgeId: string }[] = [
+  { seuil: 7, badgeId: 'streak-7' },
+  { seuil: 30, badgeId: 'streak-30' },
+  { seuil: 90, badgeId: 'streak-90' },
+];
+
+export const BADGE_NIVEAU_THRESHOLDS: { seuil: number; badgeId: string }[] = [
+  { seuil: 5, badgeId: 'niveau-5' },
+  { seuil: 10, badgeId: 'niveau-10' },
+];
+
 export type ProgressionNiveau = {
   niveau: number;
   xpDansNiveau: number;

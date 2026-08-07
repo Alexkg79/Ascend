@@ -29,6 +29,7 @@ export type Profile = {
   xp_global: number;
   cristaux: number;
   streak_actuel: number;
+  streak_max: number;
 };
 
 export type DailyChallenge = {

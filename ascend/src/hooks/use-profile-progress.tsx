@@ -21,6 +21,12 @@ export type BadgeEarned = {
   icon: string | null;
 };
 
+export type ProfileStatsData = {
+  totalDefisCompletes: number;
+  meilleurStreak: number;
+  joursActifs: number;
+};
+
 function getErrorMessage(error: unknown): string {
   if (error && typeof error === 'object' && 'message' in error) {
     return String((error as { message: unknown }).message);
@@ -35,6 +41,11 @@ export function useProfileProgress() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [skills, setSkills] = useState<SkillProgress[]>([]);
   const [badges, setBadges] = useState<BadgeEarned[]>([]);
+  const [stats, setStats] = useState<ProfileStatsData>({
+    totalDefisCompletes: 0,
+    meilleurStreak: 0,
+    joursActifs: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,19 +55,53 @@ export function useProfileProgress() {
     setError(null);
 
     try {
-      const [profileResult, themePrefsResult, skillsResult, badgesResult] = await Promise.all([
-        supabase.from('profiles').select('id, xp_global, cristaux, streak_actuel').eq('id', userId).single(),
+      const [
+        profileResult,
+        themePrefsResult,
+        skillsResult,
+        badgesResult,
+        dailyCompletedResult,
+        mysteryCompletedResult,
+        activeDaysResult,
+      ] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, xp_global, cristaux, streak_actuel, streak_max')
+          .eq('id', userId)
+          .single(),
         supabase.from('user_theme_prefs').select('theme_id, themes(id, label, icon)').eq('user_id', userId),
         supabase.from('user_skills').select('theme_id, niveau, xp').eq('user_id', userId),
         supabase.from('user_badges').select('badge_id, badges(id, label, description, icon)').eq('user_id', userId),
+        supabase
+          .from('daily_challenges')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('complete', true),
+        supabase
+          .from('mystery_challenges')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('complete', true),
+        supabase
+          .from('streaks_history')
+          .select('date', { count: 'exact', head: true })
+          .eq('user_id', userId),
       ]);
 
       if (profileResult.error) throw profileResult.error;
       if (themePrefsResult.error) throw themePrefsResult.error;
       if (skillsResult.error) throw skillsResult.error;
       if (badgesResult.error) throw badgesResult.error;
+      if (dailyCompletedResult.error) throw dailyCompletedResult.error;
+      if (mysteryCompletedResult.error) throw mysteryCompletedResult.error;
+      if (activeDaysResult.error) throw activeDaysResult.error;
 
       setProfile(profileResult.data);
+      setStats({
+        totalDefisCompletes: (dailyCompletedResult.count ?? 0) + (mysteryCompletedResult.count ?? 0),
+        meilleurStreak: profileResult.data.streak_max,
+        joursActifs: activeDaysResult.count ?? 0,
+      });
 
       const skillXpByTheme = new Map(
         (skillsResult.data ?? []).map((skill) => [skill.theme_id as string, skill.xp as number]),
@@ -94,5 +139,5 @@ export function useProfileProgress() {
     load();
   }, [load]);
 
-  return { profile, skills, badges, loading, error };
+  return { profile, skills, badges, stats, loading, error };
 }
