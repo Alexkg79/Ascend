@@ -2,6 +2,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDailyChallenges } from '@/hooks/use-daily-challenges';
+import { useNotificationPrompt } from '@/hooks/use-notification-prompt';
 import { calculerProgression, seuilNiveauGlobal } from '@/lib/gamification';
 import { getThemeAccentColor, getThemeIcon } from '@/lib/theme-icons';
 import { AuthErrorText } from '@/screens/auth-components';
@@ -10,6 +11,7 @@ import { AuthColors, AuthFonts, useAuthFonts } from '@/screens/auth-theme';
 import { ChallengeCard } from './challenge-card';
 import { HomeHeader } from './home-header';
 import { MysteryCard } from './mystery-card';
+import { NotificationPromptCard } from './notification-prompt-card';
 
 export function HomeScreen() {
   const [fontsLoaded] = useAuthFonts();
@@ -24,6 +26,8 @@ export function HomeScreen() {
     openMystery,
     completeMystery,
   } = useDailyChallenges();
+  const { visible: notificationPromptVisible, accept: acceptNotifications, dismiss: dismissNotifications } =
+    useNotificationPrompt();
 
   if (!fontsLoaded) return null;
 
@@ -48,6 +52,10 @@ export function HomeScreen() {
           streak={profile?.streak_actuel ?? 0}
           cristaux={profile?.cristaux ?? 0}
         />
+
+        {notificationPromptVisible && (
+          <NotificationPromptCard onAccept={acceptNotifications} onDismiss={dismissNotifications} />
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Tes défis du jour</Text>

@@ -1,11 +1,13 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { LoadingScreen } from '@/components/loading-screen';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
+import { ensureDailyReminderScheduled } from '@/lib/notifications';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,6 +36,14 @@ function RootNavigator() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    // Sans effet si la permission n'a pas été accordée — reprogramme sinon,
+    // au cas où l'OS ait annulé les notifications planifiées (redémarrage du
+    // téléphone) depuis le dernier lancement.
+    ensureDailyReminderScheduled();
+  }, []);
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
