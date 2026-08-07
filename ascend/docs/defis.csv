@@ -1,0 +1,61 @@
+id,theme,difficulty,xp,objectif,title
+sport-01,sport,facile,15,,Boire un grand verre d'eau au réveil
+sport-02,sport,facile,15,,Marcher 15 minutes
+sport-03,sport,facile,15,,Faire 10 squats
+sport-04,sport,facile,15,,Étirer son corps pendant 5 minutes
+sport-05,sport,moyen,25,,Faire 20 pompes
+sport-06,sport,moyen,25,,Marcher 30 minutes
+sport-07,sport,moyen,25,,Faire une séance de cardio de 15 minutes
+sport-08,sport,moyen,25,,Faire 3 séries de 15 squats
+sport-09,sport,difficile,40,,Courir 5 km
+sport-10,sport,difficile,40,,Faire une séance de sport complète de 45 minutes
+sport-11,sport,difficile,40,,Faire 50 pompes dans la journée, réparties
+sport-12,sport,difficile,40,,Faire une séance de HIIT de 20 minutes
+confiance-01,confiance,facile,15,,Faire un compliment sincère à quelqu'un
+confiance-02,confiance,facile,15,,Se regarder dans le miroir et se dire une chose positive
+confiance-03,confiance,facile,15,,Sourire à 3 inconnus dans la rue
+confiance-04,confiance,facile,15,,Écrire une réussite de sa journée
+confiance-05,confiance,moyen,25,,Parler à un inconnu
+confiance-06,confiance,moyen,25,,Prendre la parole en réunion ou en cours
+confiance-07,confiance,moyen,25,,Demander un service à quelqu'un
+confiance-08,confiance,moyen,25,,Partager une opinion personnelle en public
+confiance-09,confiance,difficile,40,,Faire une présentation devant un groupe
+confiance-10,confiance,difficile,40,,Aborder une personne qu'on admire
+confiance-11,confiance,difficile,40,,Dire non à une demande qu'on ne veut pas accepter
+confiance-12,confiance,difficile,40,,Exprimer un désaccord avec assurance
+sommeil-01,sommeil,facile,15,,Couper les écrans 30 minutes avant de dormir
+sommeil-02,sommeil,facile,15,,Boire une tisane avant le coucher
+sommeil-03,sommeil,facile,15,,Ranger sa chambre avant de dormir
+sommeil-04,sommeil,facile,15,,Noter ses pensées dans un carnet avant de dormir
+sommeil-05,sommeil,moyen,25,,Se coucher à heure fixe ce soir
+sommeil-06,sommeil,moyen,25,,Faire 10 minutes de respiration avant de dormir
+sommeil-07,sommeil,moyen,25,,Dormir sans téléphone à côté du lit
+sommeil-08,sommeil,moyen,25,,Faire une routine du soir complète en 3 étapes
+sommeil-09,sommeil,difficile,40,,Dormir 8h cette nuit
+sommeil-10,sommeil,difficile,40,,Se lever sans réactiver le réveil, pas de snooze
+sommeil-11,sommeil,difficile,40,,Ne pas toucher d'écran après 21h aujourd'hui
+sommeil-12,sommeil,difficile,40,,Se coucher et se lever à heure fixe 3 jours de suite
+finances-01,finances,facile,15,,Noter toutes ses dépenses de la journée
+finances-02,finances,facile,15,,Mettre 5 € de côté
+finances-03,finances,facile,15,,Vérifier son solde bancaire
+finances-04,finances,facile,15,,Annuler un abonnement inutilisé
+finances-05,finances,moyen,25,,Ne faire aucun achat inutile aujourd'hui
+finances-06,finances,moyen,25,,Préparer un repas maison au lieu de commander
+finances-07,finances,moyen,25,,Comparer les prix avant un achat prévu
+finances-08,finances,moyen,25,,Mettre 15 € de côté
+finances-09,finances,difficile,40,,Faire un budget complet du mois
+finances-10,finances,difficile,40,,Ne dépenser que le strict nécessaire pendant 3 jours
+finances-11,finances,difficile,40,,Vendre un objet inutilisé
+finances-12,finances,difficile,40,,Mettre 50 € de côté
+apprentissage-01,apprentissage,facile,15,,Lire 10 pages d'un livre
+apprentissage-02,apprentissage,facile,15,,Écouter un podcast éducatif pendant 15 minutes
+apprentissage-03,apprentissage,facile,15,,Apprendre un nouveau mot de vocabulaire
+apprentissage-04,apprentissage,facile,15,,Regarder une vidéo éducative de 10 minutes
+apprentissage-05,apprentissage,moyen,25,,Étudier une compétence pendant 30 minutes
+apprentissage-06,apprentissage,moyen,25,,Écrire un résumé de ce qu'on a appris
+apprentissage-07,apprentissage,moyen,25,,Pratiquer une langue étrangère 20 minutes
+apprentissage-08,apprentissage,moyen,25,,Terminer un chapitre d'un cours en ligne
+apprentissage-09,apprentissage,difficile,40,,Consacrer 1h à un projet d'apprentissage personnel
+apprentissage-10,apprentissage,difficile,40,,Terminer un module complet d'une formation
+apprentissage-11,apprentissage,difficile,40,,Enseigner à quelqu'un ce qu'on vient d'apprendre
+apprentissage-12,apprentissage,difficile,40,,Lire un article complexe et en faire une fiche de synthèse
