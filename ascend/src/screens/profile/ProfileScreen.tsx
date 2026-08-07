@@ -1,3 +1,4 @@
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,15 +12,34 @@ import { AuthErrorText } from '@/screens/auth-components';
 import { AuthColors, AuthFonts, useAuthFonts } from '@/screens/auth-theme';
 
 import { BadgesSection } from './badges-section';
+import { DeleteAccountModal } from './delete-account-modal';
 import { ProfileHeader } from './profile-header';
 import { ProfileStats } from './profile-stats';
 import { SkillRow } from './skill-row';
+
+async function extractErrorMessage(err: unknown): Promise<string> {
+  if (err instanceof FunctionsHttpError) {
+    try {
+      const body = await err.context.json();
+      if (typeof body?.error === 'string') return body.error;
+    } catch {
+      // Corps de réponse non-JSON ou déjà consommé : on garde le message générique.
+    }
+  }
+  if (err && typeof err === 'object' && 'message' in err) {
+    return String((err as { message: unknown }).message);
+  }
+  return 'Une erreur est survenue.';
+}
 
 export function ProfileScreen() {
   const [fontsLoaded] = useAuthFonts();
   const { profile, skills, badges, stats, loading, error } = useProfileProgress();
   const [signOutModalVisible, setSignOutModalVisible] = useState(false);
   const [signOutError, setSignOutError] = useState<string | null>(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   if (!fontsLoaded) return null;
 
@@ -31,6 +51,24 @@ export function ProfileScreen() {
     const { error: signOutErr } = await supabase.auth.signOut();
     if (signOutErr) {
       setSignOutError(signOutErr.message);
+    }
+  }
+
+  async function handleConfirmDelete() {
+    setDeleteLoading(true);
+    setDeleteError(null);
+    try {
+      const { error: invokeError } = await supabase.functions.invoke('delete-account');
+      if (invokeError) throw invokeError;
+
+      setDeleteModalVisible(false);
+      // Même logique que la déconnexion : pas de navigation manuelle, le
+      // guard dans _layout.tsx redirige vers (auth) dès que session est null.
+      await supabase.auth.signOut();
+    } catch (err) {
+      setDeleteError(await extractErrorMessage(err));
+    } finally {
+      setDeleteLoading(false);
     }
   }
 
@@ -92,6 +130,14 @@ export function ProfileScreen() {
             <Text style={styles.signOutText}>Se déconnecter</Text>
           </TouchableOpacity>
           <AuthErrorText message={signOutError} />
+
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => setDeleteModalVisible(true)}
+            style={styles.deleteButton}>
+            <Text style={styles.deleteText}>Supprimer mon compte</Text>
+          </TouchableOpacity>
+          <AuthErrorText message={deleteError} />
         </View>
       </ScrollView>
 
@@ -104,6 +150,13 @@ export function ProfileScreen() {
         onCancel={() => setSignOutModalVisible(false)}>
         <Text style={styles.signOutModalText}>Tu devras te reconnecter pour retrouver ton compte.</Text>
       </ConfirmModal>
+
+      <DeleteAccountModal
+        visible={deleteModalVisible}
+        loading={deleteLoading}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -154,5 +207,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: AuthColors.textMuted,
     textAlign: 'center',
+  },
+  deleteButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  deleteText: {
+    fontFamily: AuthFonts.bodyMedium,
+    fontSize: 12.5,
+    color: AuthColors.danger,
   },
 });

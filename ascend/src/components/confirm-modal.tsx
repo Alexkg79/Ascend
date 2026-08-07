@@ -11,6 +11,9 @@ type ConfirmModalProps = {
   // Colore le bouton de confirmation en rouge plutôt qu'en or — pour une
   // action qui ne peut pas être annulée légèrement (ex: déconnexion).
   destructive?: boolean;
+  // Désactive le bouton de confirmation (ex: tant que l'utilisateur n'a pas
+  // tapé le mot de confirmation exact pour la suppression de compte).
+  confirmDisabled?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   children?: ReactNode;
@@ -22,6 +25,7 @@ export function ConfirmModal({
   confirmLabel = 'Confirmer',
   cancelLabel = 'Annuler',
   destructive,
+  confirmDisabled,
   onConfirm,
   onCancel,
   children,
@@ -39,7 +43,12 @@ export function ConfirmModal({
             </Pressable>
             <Pressable
               onPress={onConfirm}
-              style={[styles.confirmButton, destructive && styles.confirmButtonDestructive]}>
+              disabled={confirmDisabled}
+              style={[
+                styles.confirmButton,
+                destructive && styles.confirmButtonDestructive,
+                confirmDisabled && styles.confirmButtonDisabled,
+              ]}>
               <Text style={[styles.confirmText, destructive && styles.confirmTextDestructive]}>
                 {confirmLabel}
               </Text>
@@ -106,6 +115,9 @@ const styles = StyleSheet.create({
   },
   confirmButtonDestructive: {
     backgroundColor: AuthColors.danger,
+  },
+  confirmButtonDisabled: {
+    opacity: 0.4,
   },
   confirmText: {
     fontFamily: AuthFonts.bodySemiBold,
