@@ -8,6 +8,7 @@ import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { LoadingScreen } from '@/components/loading-screen';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { ensureDailyReminderScheduled } from '@/lib/notifications';
+import { AuthColors } from '@/screens/auth-theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,7 +23,14 @@ function RootNavigator() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!!session && onboardingStatus === 'complete'}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="boutique" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="boutique"
+          options={{
+            presentation: 'modal',
+            animation: 'slide_from_bottom',
+            contentStyle: { backgroundColor: AuthColors.bgDeep },
+          }}
+        />
       </Stack.Protected>
       <Stack.Protected guard={!!session && onboardingStatus === 'pending'}>
         <Stack.Screen name="(onboarding)" />

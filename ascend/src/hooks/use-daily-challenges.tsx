@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { completeDailyChallenge, completeMysteryChallenge, openMysteryChallenge } from '@/lib/challenge-rewards';
@@ -61,9 +62,14 @@ export function useDailyChallenges() {
     }
   }, [userId, loadProfile]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  // Recharge à chaque focus de l'écran (pas juste au montage) : couvre le
+  // retour de la boutique, où le solde de cristaux, les défis du jour (ex.
+  // défi bonus débloqué) ou le streak peuvent avoir changé entre-temps.
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
 
   async function completeChallenge(dailyChallengeId: string) {
     if (!userId) return;

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -5,10 +6,12 @@ import { useDailyChallenges } from '@/hooks/use-daily-challenges';
 import { useNotificationPrompt } from '@/hooks/use-notification-prompt';
 import { calculerProgression, seuilNiveauGlobal } from '@/lib/gamification';
 import { getThemeAccentColor, getThemeIcon } from '@/lib/theme-icons';
+import type { DailyChallenge } from '@/lib/types';
 import { AuthErrorText } from '@/screens/auth-components';
 import { AuthColors, AuthFonts, useAuthFonts } from '@/screens/auth-theme';
 
 import { ChallengeCard } from './challenge-card';
+import { ConfirmCompleteModal } from './confirm-complete-modal';
 import { HomeHeader } from './home-header';
 import { MysteryCard } from './mystery-card';
 import { NotificationPromptCard } from './notification-prompt-card';
@@ -28,6 +31,7 @@ export function HomeScreen() {
   } = useDailyChallenges();
   const { visible: notificationPromptVisible, accept: acceptNotifications, dismiss: dismissNotifications } =
     useNotificationPrompt();
+  const [pendingChallenge, setPendingChallenge] = useState<DailyChallenge | null>(null);
 
   if (!fontsLoaded) return null;
 
@@ -73,7 +77,7 @@ export function HomeScreen() {
                   titre={daily.challenges.titre}
                   xp={daily.challenges.xp}
                   done={daily.complete}
-                  onPress={() => completeChallenge(daily.id)}
+                  onPress={() => setPendingChallenge(daily)}
                 />
               );
             })}
@@ -93,6 +97,17 @@ export function HomeScreen() {
           <AuthErrorText message={error} />
         </View>
       </ScrollView>
+
+      <ConfirmCompleteModal
+        visible={pendingChallenge !== null}
+        titre={pendingChallenge?.challenges.titre ?? ''}
+        xp={pendingChallenge?.challenges.xp ?? 0}
+        onConfirm={() => {
+          if (pendingChallenge) completeChallenge(pendingChallenge.id);
+          setPendingChallenge(null);
+        }}
+        onCancel={() => setPendingChallenge(null)}
+      />
     </SafeAreaView>
   );
 }

@@ -33,7 +33,7 @@ export function BoutiqueScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity activeOpacity={0.7} onPress={() => router.back()} style={styles.closeButton}>
+        <TouchableOpacity activeOpacity={0.7} onPress={() => router.dismiss()} style={styles.closeButton}>
           <X size={18} color={AuthColors.textPrimary} />
         </TouchableOpacity>
         <View style={styles.balance}>
