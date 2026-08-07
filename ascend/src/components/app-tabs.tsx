@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AuthColors, AuthFonts } from '@/screens/auth-theme';
+import { AuthColors, AuthFonts, useAuthFonts } from '@/screens/auth-theme';
 
 const TAB_ITEMS: { name: string; href: '/' | '/calendrier' | '/profil'; label: string; icon: LucideIcon }[] = [
   { name: 'index', href: '/', label: 'Accueil', icon: Home },
@@ -13,6 +13,12 @@ const TAB_ITEMS: { name: string; href: '/' | '/calendrier' | '/profil'; label: s
 ];
 
 export default function AppTabs() {
+  // Le label utilise une police custom (mono) chargée async : le rendre avant
+  // qu'elle soit prête le mesure avec la police système de repli, plus large,
+  // et ce composant n'a ensuite aucune raison de se re-render une fois la
+  // police prête — d'où un texte qui reste tronqué en continu.
+  const [fontsLoaded] = useAuthFonts();
+
   return (
     <Tabs style={styles.tabs}>
       <TabSlot style={styles.slot} />
@@ -20,7 +26,7 @@ export default function AppTabs() {
         <BottomNav>
           {TAB_ITEMS.map((item) => (
             <TabTrigger key={item.name} name={item.name} href={item.href} asChild>
-              <TabButton label={item.label} icon={item.icon} />
+              <TabButton label={item.label} icon={item.icon} showLabel={fontsLoaded} />
             </TabTrigger>
           ))}
         </BottomNav>
@@ -34,16 +40,18 @@ function BottomNav({ children }: { children: ReactNode }) {
   return <View style={[styles.nav, { paddingBottom: Math.max(insets.bottom, 16) }]}>{children}</View>;
 }
 
-type TabButtonProps = TabTriggerSlotProps & { label: string; icon: LucideIcon };
+type TabButtonProps = TabTriggerSlotProps & { label: string; icon: LucideIcon; showLabel: boolean };
 
-function TabButton({ label, icon: Icon, isFocused, ...props }: TabButtonProps) {
+function TabButton({ label, icon: Icon, isFocused, showLabel, ...props }: TabButtonProps) {
   const color = isFocused ? AuthColors.gold : AuthColors.textMuted;
   return (
     <Pressable {...props} style={styles.item}>
       <Icon size={19} color={color} />
-      <Text style={[styles.label, { color }]} numberOfLines={1}>
-        {label}
-      </Text>
+      {showLabel && (
+        <Text style={[styles.label, { color }]} numberOfLines={1}>
+          {label}
+        </Text>
+      )}
     </Pressable>
   );
 }

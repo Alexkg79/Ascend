@@ -69,6 +69,13 @@ async function applyChallengeRewards(
     .eq('id', userId);
   if (updateProfileError) throw updateProfileError;
 
+  if (estPremierDuJour) {
+    const { error: streakHistoryError } = await supabase
+      .from('streaks_history')
+      .upsert({ user_id: userId, date: today, statut: 'reussi' });
+    if (streakHistoryError) throw streakHistoryError;
+  }
+
   const { data: existingSkill, error: skillReadError } = await supabase
     .from('user_skills')
     .select('xp')

@@ -1,5 +1,9 @@
 export type Difficulte = 'facile' | 'moyen' | 'difficile';
 
+// 'recupere' n'est pas encore attribuable (dépend de la boutique cristaux,
+// pas encore développée) mais le type le prévoit déjà.
+export type StatutStreak = 'reussi' | 'manque' | 'recupere';
+
 export type Theme = {
   id: string;
   label: string;
