@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useRef, useState } from 'react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { formatDateString } from '@/lib/daily-challenges';
@@ -24,9 +25,13 @@ export function useMonthStreaks() {
   const [statutByDate, setStatutByDate] = useState<Record<string, StatutStreak>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Voir use-daily-challenges.tsx : useFocusEffect peut redéclencher son
+  // callback plusieurs fois pour une même transition de navigation.
+  const loadInFlightRef = useRef(false);
 
   const load = useCallback(async () => {
-    if (!userId) return;
+    if (!userId || loadInFlightRef.current) return;
+    loadInFlightRef.current = true;
     setLoading(true);
     setError(null);
 
@@ -51,12 +56,18 @@ export function useMonthStreaks() {
       setError(getErrorMessage(err));
     } finally {
       setLoading(false);
+      loadInFlightRef.current = false;
     }
   }, [userId, monthDate]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  // Recharge à chaque focus de l'écran (pas juste au montage ou au
+  // changement de mois) : sans ça, "aujourd'hui" peut rester affiché comme
+  // manqué jusqu'à un remontage complet de l'écran après une validation.
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
 
   const goToPreviousMonth = useCallback(() => {
     setMonthDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useRef, useState } from 'react';
 
 import { useAuth } from '@/hooks/use-auth';
 import { calculerProgression, seuilNiveauCompetence } from '@/lib/gamification';
@@ -48,9 +49,13 @@ export function useProfileProgress() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Voir use-daily-challenges.tsx : useFocusEffect peut redéclencher son
+  // callback plusieurs fois pour une même transition de navigation.
+  const loadInFlightRef = useRef(false);
 
   const load = useCallback(async () => {
-    if (!userId) return;
+    if (!userId || loadInFlightRef.current) return;
+    loadInFlightRef.current = true;
     setLoading(true);
     setError(null);
 
@@ -132,12 +137,18 @@ export function useProfileProgress() {
       setError(getErrorMessage(err));
     } finally {
       setLoading(false);
+      loadInFlightRef.current = false;
     }
   }, [userId]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  // Recharge à chaque focus de l'écran (pas juste au montage) : sans ça,
+  // revenir sur Profil après avoir validé un défi ailleurs affiche un
+  // niveau/XP obsolète jusqu'au prochain remontage complet de l'écran.
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
 
   return { profile, skills, badges, stats, loading, error };
 }
